@@ -1,0 +1,41 @@
+class Project_and_concat() : 
+    """
+    The input is a vector x = (w_{t-1}, w_{t-2}, ..., w_{t-n+1})
+    where w_i is the index corresponding to the word. 
+    For example, for n=4 the input vector x can be
+    (4, 2, 10)
+    where 4, 2 and 10 are the indexes of the corresponding words.
+    """
+    def __init__(self, nb_features, dict_size) :
+        self.nb_features = nb_features
+        self.dict_size = dict_size
+        self.C = np.random.randn(dict_size, nb_features)
+        self.nb_params = nb_features * dict_size # Nombre de parametres de la couche
+        self.save_X = None # Parametre de sauvegarde des donnees
+    def set_params(self,params) : 
+        # Permet de modifier les parametres de la couche, en entree, 
+        # prend un vecteur de la taille self.nb_params
+        self.C = params.reshape((self.dict_size, self.nb_features))
+    def get_params(self) : 
+        # Rend un vecteur de taille self.params qui contient les parametres de la couche
+        return np.concatenate(self.C)
+    def forward(self,X) : 
+        # calcul du forward, X est le vecteur des donnees d'entrees
+        self.save_X = np.copy(X)
+        temp = self.C[X, :]
+        result = np.reshape(temp, (X.shape[0], nb_features * X.shape[1]))
+        return result.T
+    def backward(self,grad_sortie=None) :  
+        # retropropagation du gradient sur la couche, 
+        #grad_sortie est le vecteur du gradient en sortie
+        #Cette fonction rend :
+        #grad_local, un vecteur de taille self.nb_params qui contient le gradient par rapport aux parametres locaux
+        #grad_entree, le gradient en entree de la couche 
+        A = np.array([np.arange(0, self.dict_size)])
+        def check_for_value(v):
+            return np.any(L1.save_X == v, axis=1)
+        boolean_vector = np.apply_along_axis(check_for_value, 0, A)
+        boolean_vector = np.repeat(boolean_vector, self.nb_features, axis=1)
+        grad_local = boolean_vector * 1 
+        grad_entree = None
+        return grad_local, grad_entree
